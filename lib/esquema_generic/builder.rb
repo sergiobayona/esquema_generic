@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
 require_relative 'property'
+require_relative 'type_validator'
 
 module EsquemaGeneric
   # The Builder class is responsible for building a schema for a class.
   class Builder
-    OBJECT_KEYWORDS = %i[title description type properties required additionalProperties patternProperties
-                         maxProperties dependencies propertyNames definitions _defs _comment examples allOf
-                         anyOf oneOf not].freeze
+    OBJECT_KEYWORDS = %i[title description type properties required].freeze
 
     def self.build_schema(schema_definition)
       builder = new(schema_definition)
@@ -46,10 +45,10 @@ module EsquemaGeneric
     end
 
     def build_properties
-      # properties.transform_values do |property|
-      #   property
-      # end
-      {}
+      properties.each_with_object({}) do |(property_name, options), hash|
+        TypeValidator.validate!(property_name, options[:type], options)
+        hash[property_name] = Property.new(property_name, options)
+      end
     end
 
     def properties
@@ -58,54 +57,6 @@ module EsquemaGeneric
 
     def build_required
       []
-    end
-
-    def build_additionalProperties
-      false
-    end
-
-    def build_patternProperties
-      {}
-    end
-
-    def build_maxProperties
-      nil
-    end
-
-    def build_dependencies
-      {}
-    end
-
-    def build_propertyNames
-      nil
-    end
-
-    def build_definitions
-      {}
-    end
-
-    def build__defs; end
-
-    def build__comment; end
-
-    def build_examples
-      []
-    end
-
-    def build_allOf
-      []
-    end
-
-    def build_anyOf
-      []
-    end
-
-    def build_oneOf
-      []
-    end
-
-    def build_not
-      nil
     end
   end
 end
