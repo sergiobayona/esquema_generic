@@ -1,6 +1,6 @@
 # Esquema Generic
 
-Esquema is a Ruby library for JSON Schema generation.
+Esquema Generic is a Ruby DSL and generation library for JSON Schema.
 
 Example Use:
 
@@ -9,7 +9,8 @@ class User
   include EsquemaGeneric::Model
 
   define_schema do
-    model_description "A user of the system"
+    title "User"
+    description "A user of the system"
     property :name, type: "string", description: "The user's name", title: "Full Name"
     property :email, type: "string", description: "The user's email", format: "email", title: "Email Address"
     property :group, type: "number", enum: [1, 2, 3], default: 1, description: "The user's group"
@@ -19,11 +20,12 @@ class User
 end
 ```
 
-Calling `User.json_schema` will return the JSON Schema for the User model:
+Calling `User.json_schema` will return the JSON Schema for the User class:
 
 ```json
 {
-    "title": "User model",
+    "title": "User",
+    "description": "A user of the system",
     "type": "object",
     "properties": {
         "name": {
@@ -77,12 +79,12 @@ Calling `User.json_schema` will return the JSON Schema for the User model:
 
 ## Usage
 
-Simply include the `EsquemaGeneric::Model` module in your Ruby class and call the `json_schema` method to generate the JSON Schema for the model.
+Simply include the `EsquemaGeneric::Model` module in your Ruby class, define your schema using and call the `json_schema` method to generate the JSON Schema for the model.
 
 
 ## Schema Definition
 
-In the example above, the `define_schema` method is used to add a description to the schema document. The `property` method is used to define the properties of the schema document. The `property` method accepts the name of the property and a hash of options. The options are used specify the type and keywords for validation.
+In the example above, the `define_schema` method is used to add a description and a title to the schema document. The `property` method is used to define the properties of the schema document. The `property` method accepts the name of the property and a hash of options.
 
 ## Development
 

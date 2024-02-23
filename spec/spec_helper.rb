@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require 'rake'
+require 'rspec'
 require 'esquema_generic'
 require 'pry-byebug'
+require 'rspec/json_expectations'
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = '.rspec_status'
