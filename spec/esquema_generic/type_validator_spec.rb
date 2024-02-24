@@ -10,14 +10,14 @@ RSpec.describe EsquemaGeneric::TypeValidator do # rubocop:disable Metrics/BlockL
 
       it 'raises an error for unsupported constraints' do
         expect { described_class.validate!('property_name', 'string', { unsupported: true }) }
-          .to raise_error(ArgumentError, "Unsupported keyword 'unsupported' for type 'string' in property_name")
+          .to raise_error(ArgumentError, "Unsupported keyword 'unsupported' for type 'string' in 'property_name'")
       end
     end
 
     context 'when the type is not supported' do
       it 'raises an error' do
         expect { described_class.validate!('property_name', 'invalid_type', {}) }
-          .to raise_error(ArgumentError, "Unsupported type 'invalid_type' for `property_name`")
+          .to raise_error(ArgumentError, "Unsupported type 'invalid_type' for 'property_name'")
       end
     end
 
