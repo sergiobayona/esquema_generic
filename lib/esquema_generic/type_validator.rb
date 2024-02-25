@@ -40,36 +40,54 @@ module EsquemaGeneric
 
       private
 
-      def validate_type(property_name, type)
-        raise ArgumentError, "Unsupported type '#{type}' for '#{property_name}'" unless SUPPORTED_TYPES.include?(type)
+      def validate_type(property_name, types)
+        raise ArgumentError, "Invalid type for '#{property_name}'" if [nil, {}, []].include?(types)
+
+        types = Array(types)
+        unsupported_types = types - SUPPORTED_TYPES
+
+        return if unsupported_types.empty?
+
+        raise ArgumentError, "Unsupported type(s) '#{unsupported_types.join(', ')}' for '#{property_name}'"
       end
 
-      def validate_constraints(property_name, type, constraints)
+      def validate_constraints(property_name, types, constraints) # rubocop:disable Metrics/MethodLength
+        types = Array(types) # Ensure types is always an array
+
         constraints.each do |constraint, value|
-          validate_keyword(property_name, type, constraint)
-          validate_with_validator(property_name, constraint, value)
+          applicable_types = types.select { |type| type_constraint_applicable?(type, constraint) }
+          if applicable_types.empty?
+            raise ArgumentError,
+                  "Constraint '#{constraint}' is not applicable to any of the types #{types.join(', ')} for '#{property_name}'"
+          end
+
+          applicable_types.each do |type|
+            validate_with_validator(property_name, type, constraint, value)
+          end
         end
       end
 
-      def validate_keyword(property_name, type, constraint)
-        return if TYPE_CONSTRAINTS[type]&.include?(constraint) || GENERIC_KEYWORDS.include?(constraint)
-
-        raise ArgumentError, "Unsupported keyword '#{constraint}' for type '#{type}' in '#{property_name}'"
+      def type_constraint_applicable?(type, constraint)
+        TYPE_CONSTRAINTS[type]&.include?(constraint) || GENERIC_KEYWORDS.include?(constraint)
       end
 
-      def validate_with_validator(property_name, constraint, value)
-        validator_class = validator_for(constraint)
-        validator_class.new(property_name, constraint, value).validate if validator_class
+      def validate_with_validator(property_name, type, constraint, value)
+        validator_class = validator_for(constraint, type) # Now also pass type
+        if validator_class
+          validator_class.new(property_name, constraint, value).validate
+        else
+          raise ArgumentError,
+                "No validator found for constraint '#{constraint}' on property '#{property_name}' with type '#{type}'"
+        end
       end
 
-      def validator_for(constraint)
+      def validator_for(constraint, type)
         case constraint
         when *INTEGER_EXPECTED_CONTRAINT
-          Validators::IntegerValidator
+          type == 'integer' ? Validators::IntegerValidator : nil
         when *STRING_EXPECTED_CONSTRAINT
-          Validators::StringValidator
-        when *OBJECT_OR_ARRAY_EXPECTED_CONSTRAINT
-          Validators::ObjectOrArrayValidator
+          type == 'string' ? Validators::StringValidator : nil
+          # Adjust logic as needed based on actual constraint-type relationships
         end
       end
     end
