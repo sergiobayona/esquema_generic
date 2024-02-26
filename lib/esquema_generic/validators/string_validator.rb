@@ -8,7 +8,7 @@ module EsquemaGeneric
       def validate
         unless @value.is_a?(String)
           raise ArgumentError,
-                "Value for '#{@constraint}' in '#{@property_name}' must be a string."
+                "Value of '#{@constraint}' in '#{@property_name}' must be a string."
         end
 
         @value = @value.to_s

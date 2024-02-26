@@ -35,8 +35,8 @@ RSpec.describe EsquemaGeneric::Model do # rubocop:disable Metrics/BlockLength
       expect(properties).to be_a(Hash)
       expect(user.schema_definition[:title]).to eq('User')
       expect(user.schema_definition[:description]).to eq('A user of the system')
-      expect(properties[:name]).to eq(type: 'string')
-      expect(properties[:email]).to eq(type: 'string')
+      expect(properties[:name]).to eq(title: "Person's Name", type: 'string')
+      expect(properties[:email]).to eq(title: "Person's Mailing Address", type: 'string', format: 'email')
     end
   end
 

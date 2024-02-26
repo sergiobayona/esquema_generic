@@ -25,6 +25,8 @@ module EsquemaGeneric
       end
 
       # Returns the schema definition.
+      # The schema_definition is a hash that contains the unvalidated schema definition for the model.
+      # It is then passed to the Builder.build_schema method to validate and compile the schema.
       def self.schema_definition
         @schema_definition ||= {}
       end
