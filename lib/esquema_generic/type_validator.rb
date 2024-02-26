@@ -3,6 +3,7 @@ require_relative 'validators/base_validator'
 require_relative 'validators/integer_validator'
 require_relative 'validators/string_validator'
 require_relative 'validators/enum_validator'
+require_relative 'validators/items_validator'
 
 module EsquemaGeneric
   module TypeValidator
