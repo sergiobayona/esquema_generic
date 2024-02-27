@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'esquema_generic/type_validator'
+require "spec_helper"
+require "esquema_generic/schema_validation"
 
 RSpec.describe EsquemaGeneric::TypeValidator do
   # describe '.validate!' do

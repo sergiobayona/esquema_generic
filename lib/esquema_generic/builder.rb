@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'property'
-require_relative 'type_validator'
+require_relative 'schema_validation'
 
 module EsquemaGeneric
   # The Builder class is responsible for building a schema for a class.
