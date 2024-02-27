@@ -48,7 +48,7 @@ RSpec.describe EsquemaGeneric::TypeValidator, 'Item validation' do # rubocop:dis
     it 'raises an error' do
       expect do
         described_class.validate!('property_name', 'array', { items: ['test'] })
-      end.to raise_error(ArgumentError, 'Items constraint must contain hashes.')
+      end.to raise_error(ArgumentError, "Elements in 'items' constraint must contain a type keyword.")
     end
   end
 
