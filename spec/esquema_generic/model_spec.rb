@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EsquemaGeneric::Model do
+RSpec.describe EsquemaGeneric::Model do # rubocop:disable Metrics/BlockLength
   let(:user) do
     Class.new do
       include EsquemaGeneric::Model
@@ -15,19 +15,45 @@ RSpec.describe EsquemaGeneric::Model do
     end
   end
 
-  describe '.define_schema' do
+  describe '.json_schema' do
+    it 'returns the JSON schema' do
+      expect(user.json_schema).to eq({})
+    end
+  end
+
+  describe '.schema_definition' do
     it 'enhances the schema using the provided block' do
       user.define_schema do
-        property :name, title: "Person's Name"
-        property :email, title: "Person's Mailing Address"
+        title 'User'
+        description 'A user of the system'
+        property :name, type: 'string', title: "Person's Name"
+        property :email, type: 'string', format: 'email', title: "Person's Mailing Address"
       end
 
-      expect(user.schema_definition).to eq(
-        properties: {
-          name: { title: "Person's Name" },
-          email: { title: "Person's Mailing Address" }
-        }
-      )
+      properties = user.schema_definition[:properties]
+
+      expect(properties).to be_a(Hash)
+      expect(user.schema_definition[:title]).to eq('User')
+      expect(user.schema_definition[:description]).to eq('A user of the system')
+      expect(properties[:name]).to eq(title: "Person's Name", type: 'string')
+      expect(properties[:email]).to eq(title: "Person's Mailing Address", type: 'string', format: 'email')
+    end
+  end
+
+  describe '.json_schema' do
+    it 'returns the JSON schema for the model' do
+      user.define_schema do
+        title 'User'
+        description 'A user of the system'
+        property :name, type: 'string', title: "Person's Name"
+        property :email, type: 'string', format: 'email', title: "Person's Mailing Address"
+      end
+
+      expect(user.json_schema).to include_json({
+                                                 title: 'User',
+                                                 description: 'A user of the system',
+                                                 type: 'object'
+                                               })
     end
   end
 end

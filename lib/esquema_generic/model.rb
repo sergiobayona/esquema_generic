@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
+require 'json'
+require 'active_support/time'
 require 'active_support/concern'
+require 'active_support/json'
 require_relative 'builder'
 require_relative 'schema_definition'
 
@@ -9,9 +12,8 @@ module EsquemaGeneric
     extend ActiveSupport::Concern
 
     included do
-      # Returns the JSON schema for the model.
       def self.json_schema
-        Builder.new(self).build_schema.to_json
+        @json_schema ||= {}
       end
 
       # Define the schema using the provided block.
@@ -19,9 +21,12 @@ module EsquemaGeneric
         schema_definition
         definition = SchemaDefinition.new(self, @schema_definition)
         definition.instance_eval(&block)
+        @json_schema = Builder.build_schema(schema_definition)
       end
 
       # Returns the schema definition.
+      # The schema_definition is a hash that contains the unvalidated schema definition for the model.
+      # It is then passed to the Builder.build_schema method to validate and compile the schema.
       def self.schema_definition
         @schema_definition ||= {}
       end
